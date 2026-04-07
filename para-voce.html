@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para Você ♡</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #FFFDF0;
+      font-family: 'Press Start 2P', monospace;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ── CLOUDS ── */
+    .clouds-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .cloud {
+      position: absolute;
+      background: #fff;
+      border-radius: 50px;
+      opacity: 0.85;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+    }
+    .cloud::before { width: 60%; height: 150%; top: -55%; left: 15%; }
+    .cloud::after  { width: 45%; height: 130%; top: -45%; left: 45%; }
+
+    .cloud-1  { width:120px; height:38px; top: 8%;  animation: drift 28s linear infinite; }
+    .cloud-2  { width: 90px; height:30px; top:18%;  animation: drift 35s linear infinite 5s; }
+    .cloud-3  { width:150px; height:46px; top: 5%;  animation: drift 22s linear infinite 10s; }
+    .cloud-4  { width: 80px; height:26px; top:30%;  animation: drift 40s linear infinite 2s; }
+    .cloud-5  { width:110px; height:35px; top:12%;  animation: drift 32s linear infinite 16s; }
+    .cloud-6  { width: 70px; height:24px; top:22%;  animation: drift 45s linear infinite 8s; }
+
+    @keyframes drift {
+      from { transform: translateX(-220px); }
+      to   { transform: translateX(calc(100vw + 220px)); }
+    }
+
+    /* ── SPARKLES ── */
+    .sparkles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .sparkle {
+      position: absolute;
+      color: #FFE566;
+      font-size: 14px;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.2; transform: scale(0.8); }
+      50%      { opacity: 1;   transform: scale(1.2); }
+    }
+
+    /* ── MUSIC INDICATOR ── */
+    .music-indicator {
+      position: fixed;
+      top: 18px;
+      right: 18px;
+      background: #FFE566;
+      border: 3px solid #1a1a1a;
+      padding: 7px 12px;
+      font-size: 9px;
+      display: none;
+      z-index: 100;
+      box-shadow: 3px 3px 0 #1a1a1a;
+      animation: musicPulse 1.4s ease-in-out infinite;
+    }
+    .music-indicator.visible { display: block; }
+    @keyframes musicPulse {
+      0%,100% { transform: scale(1); }
+      50%      { transform: scale(1.05); }
+    }
+
+    /* ── SCENE ── */
+    .scene {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    /* ── TITLE ── */
+    .title-wrap {
+      text-align: center;
+    }
+    .title {
+      font-size: clamp(16px, 3vw, 28px);
+      color: #1a1a1a;
+      text-shadow: 3px 3px 0 #FFE566;
+      letter-spacing: 2px;
+    }
+    .subtitle-box {
+      display: inline-block;
+      margin-top: 10px;
+      background: #FFE566;
+      border: 3px solid #1a1a1a;
+      padding: 6px 14px;
+      font-size: 8px;
+      color: #1a1a1a;
+      box-shadow: 3px 3px 0 #1a1a1a;
+    }
+
+    /* ── THEATER ── */
+    .theater {
+      position: relative;
+      width: 560px;
+      max-width: 100%;
+      height: 420px;
+      border: 5px solid #1a1a1a;
+      box-shadow: 8px 8px 0 #1a1a1a;
+      overflow: hidden;
+      background: #2a1a0e;
+    }
+
+    /* ── CURTAINS ── */
+    .curtain {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      background: #F4C430;
+      background-image: repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 18px,
+        rgba(0,0,0,0.08) 18px,
+        rgba(0,0,0,0.08) 22px
+      );
+      z-index: 10;
+      transition: transform 1.5s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+    .curtain::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 30px;
+      background: #F4C430;
+      border-top: 4px solid rgba(0,0,0,0.15);
+    }
+    .curtain.left  { left: 0; transform-origin: left; }
+    .curtain.right { right: 0; transform-origin: right; }
+
+    .theater.open .curtain.left  { transform: translateX(-100%); }
+    .theater.open .curtain.right { transform: translateX(100%); }
+    .theater.open .play-overlay  { display: none; }
+
+    /* ── PLAY OVERLAY ── */
+    .play-overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+    .play-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #FFE566;
+      border: 4px solid #1a1a1a;
+      box-shadow: 4px 4px 0 #1a1a1a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 10px;
+      color: #1a1a1a;
+      transition: transform 0.1s, box-shadow 0.1s;
+      user-select: none;
+    }
+    .play-btn:hover { transform: translate(1px,1px); box-shadow: 3px 3px 0 #1a1a1a; }
+    .play-btn:active { transform: translate(4px,4px); box-shadow: 0px 0px 0 #1a1a1a; }
+    .play-triangle {
+      width: 0; height: 0;
+      border-top: 14px solid transparent;
+      border-bottom: 14px solid transparent;
+      border-left: 22px solid #1a1a1a;
+      margin-left: 5px;
+    }
+
+    /* ── STAGE CONTENT ── */
+    .stage-content {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    /* ── SPEECH BUBBLE ── */
+    .speech-bubble {
+      position: relative;
+      background: #fff;
+      border: 3px solid #1a1a1a;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-size: 8px;
+      color: #1a1a1a;
+      max-width: 280px;
+      min-height: 38px;
+      min-width: 160px;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.4s;
+      margin-bottom: 8px;
+      line-height: 1.6;
+      box-shadow: 3px 3px 0 #1a1a1a;
+      z-index: 5;
+    }
+    .speech-bubble.visible { opacity: 1; }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 28px;
+      border-width: 14px 10px 0 0;
+      border-style: solid;
+      border-color: #1a1a1a transparent transparent transparent;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 31px;
+      border-width: 11px 8px 0 0;
+      border-style: solid;
+      border-color: #fff transparent transparent transparent;
+      z-index: 1;
+    }
+
+    /* ── CHARACTERS ── */
+    .characters {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 24px;
+      padding-bottom: 0;
+    }
+    .char-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: none;
+    }
+    .char-wrap.bobbing {
+      animation: bob 2.8s ease-in-out infinite;
+    }
+    .char-wrap:nth-child(2).bobbing {
+      animation: bob 3.2s ease-in-out infinite 0.5s;
+    }
+    @keyframes bob {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-8px); }
+    }
+
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    /* ── STAGE FLOOR ── */
+    .stage-floor {
+      width: 100%;
+      height: 52px;
+      background: repeating-linear-gradient(
+        90deg,
+        #F4C430 0px,
+        #F4C430 28px,
+        #e6b020 28px,
+        #e6b020 30px,
+        #F4C430 30px,
+        #F4C430 58px
+      );
+      border-top: 4px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      font-size: 9px;
+      color: #1a1a1a;
+      text-align: center;
+      padding: 4px 0;
+      letter-spacing: 1px;
+    }
+
+    /* ── FLOATING HEARTS ── */
+    .hearts-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+    }
+    .heart {
+      position: absolute;
+      font-size: 22px;
+      animation: floatUp 3.5s ease-out forwards;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(0) scale(1); opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateY(-300px) scale(0.5); opacity: 0; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .theater { width: 340px; height: 280px; }
+      .title   { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CLOUDS -->
+<div class="clouds-bg">
+  <div class="cloud cloud-1"></div>
+  <div class="cloud cloud-2"></div>
+  <div class="cloud cloud-3"></div>
+  <div class="cloud cloud-4"></div>
+  <div class="cloud cloud-5"></div>
+  <div class="cloud cloud-6"></div>
+</div>
+
+<!-- SPARKLES (populated by JS) -->
+<div class="sparkles" id="sparkles"></div>
+
+<!-- MUSIC INDICATOR -->
+<div class="music-indicator" id="musicIndicator">♪ lofi mode ♪</div>
+
+<!-- HEARTS CONTAINER -->
+<div class="hearts-container" id="heartsContainer"></div>
+
+<!-- MAIN SCENE -->
+<div class="scene">
+  <div class="title-wrap">
+    <div class="title">★ Para Você ♡ ★</div>
+    <div class="subtitle-box">~ uma mensagem especial ~</div>
+  </div>
+
+  <div class="theater" id="theater">
+    <!-- CURTAINS -->
+    <div class="curtain left"></div>
+    <div class="curtain right"></div>
+
+    <!-- PLAY BUTTON -->
+    <div class="play-overlay" id="playOverlay">
+      <button class="play-btn" id="playBtn" onclick="startShow()">
+        <div class="play-triangle"></div>
+      </button>
+    </div>
+
+    <!-- STAGE CONTENT -->
+    <div class="stage-content">
+      <div class="speech-bubble" id="speechBubble"></div>
+
+      <div class="characters">
+        <div class="char-wrap" id="snoopyWrap">
+          <canvas id="snoopy" width="144" height="216"></canvas>
+        </div>
+        <div class="char-wrap" id="fifiWrap">
+          <canvas id="fifi" width="96" height="176"></canvas>
+        </div>
+      </div>
+
+      <div class="stage-floor"></div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">com amor, sempre ♡</div>
+</div>
+
+<script>
+// ── PIXEL ART RENDERER ──
+function drawPixelArt(canvas, artLines, scale, colorMap) {
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  artLines.forEach((row, r) => {
+    [...row].forEach((c, col) => {
+      if (colorMap[c]) {
+        ctx.fillStyle = colorMap[c];
+        ctx.fillRect(col * scale, r * scale, scale, scale);
+      }
+    });
+  });
+}
+
+// ── SNOOPY PIXEL DATA (18 cols × 27 rows) ──
+const SNOOPY_ART = [
+  '...KKKKKKKKKKKK...',  // 0
+  '..KWWWWWWWWWWWWK..',  // 1
+  'KKKWWWWWWWWWWWWKKK',  // 2
+  'KKKWWWWWWWWWWWWKKK',  // 3
+  'KKKWWWWWWWWWWWWKKK',  // 4
+  'KKKWWWKWWWWKWWWKKK',  // 5  eyes
+  'KKKWWWWWWWWWWWWKKK',  // 6
+  'KKKWWWWKKKKWWWWKKK',  // 7  nose
+  'KKKWWWWKKKKWWWWKKK',  // 8
+  'KKKWWWWWWWWWWWWKKK',  // 9
+  '..KWWWWWWWWWWWWK..',  // 10
+  '...KKKKKKKKKKKK...',  // 11 chin
+  '...RRRRRRRRRRRR...',  // 12 collar
+  '....WWWWWWWWWW....',  // 13
+  '...WWWWWWWWWWWWW..',  // 14
+  '...WWWWWWWWWWWWW..',  // 15
+  '...WWWWWWWWWWWWW..',  // 16
+  '...WWWWWWWWWWWWW..',  // 17
+  '....WWWWWWWWWWW...',  // 18
+  '.....WWWWWWWWW....',  // 19
+  '.....WWWWWWWWW....',  // 20
+  '.....KK.....KK....',  // 21 legs
+  '.....WW.....WW....',  // 22
+  '.....WW.....WW....',  // 23
+  '.....WW.....WW....',  // 24
+  '....KWWWK.KWWWK..',  // 25 paws
+  '....KKKKK.KKKKK..',  // 26
+];
+
+const SNOOPY_COLORS = {
+  'K': '#1a1a1a',
+  'W': '#f8f8f8',
+  'R': '#e84444',
+};
+
+// ── FIFI PIXEL DATA (12 cols × 22 rows) ──
+const FIFI_ART = [
+  'K...YYYY...K',  // 0
+  'KK.YYYYYY.KK',  // 1
+  'KKK.YYYY.KKK',  // 2
+  'KKKWWWWWWKKK',  // 3
+  '.KWWWWWWWWK.',  // 4
+  '.KWKWWWKWWK.',  // 5  eyes
+  '.KWWWWWWWWK.',  // 6
+  '.KWWWKKKWWK.',  // 7  nose
+  '.KWWWKKKWWK.',  // 8
+  '..KKKKKKKK..',  // 9  chin
+  '..PPPPPPPP..',  // 10 collar
+  '...WWWWWWW..',  // 11
+  '..WWWWWWWWWW',  // 12
+  '..WWWWWWWWWW',  // 13
+  '..WWWWWWWWWW',  // 14
+  '...WWWWWWWW.',  // 15
+  '....WWWWWW..',  // 16
+  '....KK..KK..',  // 17
+  '....WW..WW..',  // 18
+  '....WW..WW..',  // 19
+  '...KWWK.KWWK',  // 20 paws
+  '...KKKK.KKKK',  // 21
+];
+
+const FIFI_COLORS = {
+  'K': '#1a1a1a',
+  'W': '#f8f8f8',
+  'Y': '#FFD700',
+  'P': '#FFB6C1',
+};
+
+// ── MESSAGES ──
+const MESSAGES = [
+  'Eu amo vc ♡',
+  'Fique bem, ta?',
+  'Vai dar certo!',
+  'Voce e a melhor ✨',
+  'I Love Sonio 🌟',
+  'Snoopy King 👑',
+  'Se alimente, tenha um proposito 🌻',
+  'Medite, coloque a cabeca no lugar 🧘',
+];
+
+// ── LOFI CHORD DATA ──
+const CHORDS = [
+  { notes: [220, 261.63, 329.63], bass: 110 },
+  { notes: [196, 246.94, 293.66], bass: 98 },
+  { notes: [261.63, 329.63, 392], bass: 130.81 },
+  { notes: [174.61, 220, 261.63], bass: 87.31 },
+];
+
+// ── STATE ──
+let audioCtx = null;
+let masterGain = null;
+let chordIndex = 0;
+let msgIndex = 0;
+let activeOscillators = [];
+let musicScheduler = null;
+let lastScheduledTime = 0;
+const CHORD_DURATION = 4;
+let showStarted = false;
+
+// ── INIT ──
+window.onload = () => {
+  // Draw pixel art
+  drawPixelArt(
+    document.getElementById('snoopy'),
+    SNOOPY_ART, 8, SNOOPY_COLORS
+  );
+  drawPixelArt(
+    document.getElementById('fifi'),
+    FIFI_ART, 8, FIFI_COLORS
+  );
+
+  // Apply CSS scale for chunky pixel look
+  const snoopyCanvas = document.getElementById('snoopy');
+  snoopyCanvas.style.transform = 'scale(1.5)';
+  snoopyCanvas.style.transformOrigin = 'bottom center';
+
+  const fifiCanvas = document.getElementById('fifi');
+  fifiCanvas.style.transform = 'scale(1.5)';
+  fifiCanvas.style.transformOrigin = 'bottom center';
+
+  createSparkles();
+};
+
+// ── SPARKLES ──
+function createSparkles() {
+  const container = document.getElementById('sparkles');
+  const symbols = ['★', '✦', '✧', '⭐', '✨'];
+  for (let i = 0; i < 22; i++) {
+    const span = document.createElement('span');
+    span.className = 'sparkle';
+    span.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    span.style.left = Math.random() * 100 + 'vw';
+    span.style.top  = Math.random() * 100 + 'vh';
+    span.style.animationDelay = (Math.random() * 3) + 's';
+    span.style.fontSize = (10 + Math.random() * 12) + 'px';
+    span.style.opacity = (0.3 + Math.random() * 0.5).toString();
+    container.appendChild(span);
+  }
+}
+
+// ── START SHOW ──
+function startShow() {
+  if (showStarted) return;
+  showStarted = true;
+
+  const theater = document.getElementById('theater');
+  theater.classList.add('open');
+
+  startLofi();
+
+  document.getElementById('musicIndicator').classList.add('visible');
+
+  // Start bobbing after curtains open
+  setTimeout(() => {
+    document.getElementById('snoopyWrap').classList.add('bobbing');
+    document.getElementById('fifiWrap').classList.add('bobbing');
+    showSpeechBubble();
+    startHeartSpawner();
+  }, 1800);
+}
+
+// ── LOFI MUSIC ──
+function startLofi() {
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  masterGain = audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  masterGain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 2);
+
+  const filter = audioCtx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.value = 2500;
+
+  masterGain.connect(filter);
+  filter.connect(audioCtx.destination);
+
+  lastScheduledTime = audioCtx.currentTime;
+  scheduleChords();
+  musicScheduler = setInterval(scheduleChords, 500);
+}
+
+function scheduleChords() {
+  const lookAhead = 1.0;
+  const scheduleUntil = audioCtx.currentTime + lookAhead;
+
+  while (lastScheduledTime < scheduleUntil) {
+    const chord = CHORDS[chordIndex % CHORDS.length];
+    playChord(chord, lastScheduledTime, CHORD_DURATION);
+    lastScheduledTime += CHORD_DURATION;
+    chordIndex++;
+  }
+}
+
+function playChord(chord, startTime, duration) {
+  // Triangle wave oscillators for chord notes
+  chord.notes.forEach((freq, i) => {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(0.12, startTime + 0.05);
+    gain.gain.linearRampToValueAtTime(0.08, startTime + duration * 0.7);
+    gain.gain.linearRampToValueAtTime(0, startTime + duration - 0.05);
+    osc.connect(gain);
+    gain.connect(masterGain);
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  });
+
+  // Sine wave bass
+  const bass = audioCtx.createOscillator();
+  const bassGain = audioCtx.createGain();
+  bass.type = 'sine';
+  bass.frequency.value = chord.bass;
+  bassGain.gain.setValueAtTime(0, startTime);
+  bassGain.gain.linearRampToValueAtTime(0.18, startTime + 0.08);
+  bassGain.gain.linearRampToValueAtTime(0.1, startTime + duration * 0.6);
+  bassGain.gain.linearRampToValueAtTime(0, startTime + duration - 0.08);
+  bass.connect(bassGain);
+  bassGain.connect(masterGain);
+  bass.start(startTime);
+  bass.stop(startTime + duration);
+}
+
+// ── SPEECH BUBBLE / MESSAGES ──
+function showSpeechBubble() {
+  const bubble = document.getElementById('speechBubble');
+  bubble.classList.add('visible');
+  cycleMessages();
+}
+
+function cycleMessages() {
+  const bubble = document.getElementById('speechBubble');
+  const msg = MESSAGES[msgIndex % MESSAGES.length];
+  msgIndex++;
+
+  // Typewriter
+  bubble.textContent = '';
+  bubble.style.opacity = '1';
+  let charIdx = 0;
+  const typeInterval = setInterval(() => {
+    if (charIdx < msg.length) {
+      bubble.textContent += msg[charIdx];
+      charIdx++;
+    } else {
+      clearInterval(typeInterval);
+      // Hold for 2.5s then fade out, then next
+      setTimeout(() => {
+        bubble.style.transition = 'opacity 0.5s';
+        bubble.style.opacity = '0';
+        setTimeout(() => {
+          bubble.style.transition = 'opacity 0.4s';
+          cycleMessages();
+        }, 600);
+      }, 2500);
+    }
+  }, 65);
+}
+
+// ── FLOATING HEARTS ──
+function startHeartSpawner() {
+  spawnHeart();
+  setInterval(spawnHeart, 4000);
+}
+
+function spawnHeart() {
+  const container = document.getElementById('heartsContainer');
+  const hearts = ['♡', '♥', '💛', '💕', '✨'];
+  const div = document.createElement('div');
+  div.className = 'heart';
+  div.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+  div.style.left  = (15 + Math.random() * 70) + 'vw';
+  div.style.bottom = (10 + Math.random() * 20) + 'vh';
+  div.style.animationDuration = (2.8 + Math.random() * 1.5) + 's';
+  div.style.fontSize = (18 + Math.random() * 16) + 'px';
+  container.appendChild(div);
+  setTimeout(() => div.remove(), 4500);
+}
+</script>
+</body>
+</html>
