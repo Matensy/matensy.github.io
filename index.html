@@ -393,6 +393,18 @@
     );
   }
 
+  function docLink(name, href, meta) {
+    return (
+      `<div class="proj-item">` +
+        `<div class="proj-header">` +
+          `<a class="proj-name" href="${href}" target="_blank" rel="noopener">${name}</a>` +
+          `<span class="diff-easy">[PDF]</span>` +
+        `</div>` +
+        `<div class="proj-topics">${meta}</div>` +
+      `</div>`
+    );
+  }
+
   function expItem(role, company, period, bullets) {
     return (
       `<div class="exp-item">` +
@@ -478,7 +490,15 @@
       proj('HTB Puppy',       'medium', 'Kerberos · LDAP · SMB · DCSync · DPAPI') +
       proj('HTB Fluffy',      'easy',   'SMB · Responder · Certipy · PKI · ShadowCredentials') +
       proj('HTB Editor',      'easy',   'XWiki · CVE-2025-24893 · Netdata') +
-      proj('HTB WhiteRabbit', 'insane', 'SQL Injection · MD5 · PredictableRNG · Sudo')
+      proj('HTB WhiteRabbit', 'insane', 'SQL Injection · MD5 · PredictableRNG · Sudo') +
+
+      `<div class="sec-title" style="margin-top:24px">Malware Analysis Reports</div>` +
+      docLink('Kjnry Malware Analysis', 'assets/docs/kjnry-malware-analysis.pdf', 'Static &amp; behavioral analysis report') +
+      docLink('ABC Malware Analysis',   'assets/docs/abc-malware-analysis.pdf',   'Static &amp; behavioral analysis report') +
+
+      `<div class="sec-title" style="margin-top:24px">More</div>` +
+      kv('CTF Writeups', '<a href="https://app.notion.com/p/2675985292f080c2992be4f9450ac607?v=2675985292f081cdb3f9000c4bff0b2b" target="_blank" rel="noopener">Notion — CTFs</a>') +
+      kv('GitHub',       '<a href="https://github.com/Matensy/" target="_blank" rel="noopener">github.com/Matensy</a>')
     );
   }
 
