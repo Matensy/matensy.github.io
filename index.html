@@ -3,689 +3,487 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Matensy — Portfolio</title>
-  <meta name="description" content="Matensy — Cybersecurity Student & Hack The Box Player">
-  <link rel="icon" href="assets/img/favicon.png">
+  <title>Matensy — Offensive Security &amp; Malware Analysis</title>
+  <meta name="description" content="Matheus Henrique (Matensy) — Segurança ofensiva, análise de malware e Active Directory. Top 17 BR no Hack The Box como auramentality.">
+  <meta name="theme-color" content="#07070b">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Matensy — Offensive Security &amp; Malware Analysis">
+  <meta property="og:description" content="Segurança ofensiva, análise de malware e Active Directory. Top 17 BR no Hack The Box.">
+  <meta property="og:url" content="https://matensy.github.io/">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="assets/img/favicon.png" sizes="32x32">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:           #0c0c0c;
-      --surface:      #141414;
-      --header-bg:    #0f0f0f;
-      --border:       #222222;
-      --accent:       #a855f7;
-      --accent-soft:  rgba(168, 85, 247, 0.12);
-      --text:         #d0d0d0;
-      --text-dim:     #909090;
-      --text-muted:   #505050;
-      --green:        #4ade80;
-      --yellow:       #fbbf24;
-      --red:          #f87171;
-      --pink:         #e879f9;
-    }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    /* ── Background grid ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(168,85,247,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(168,85,247,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── Terminal Window ── */
-    .terminal {
-      position: relative;
-      z-index: 1;
-      width: min(860px, 100vw);
-      height: min(680px, 100vh);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      display: flex;
-      flex-direction: column;
-      box-shadow:
-        0 0 0 1px rgba(168,85,247,0.1),
-        0 30px 80px rgba(0,0,0,0.8),
-        inset 0 1px 0 rgba(255,255,255,0.04);
-      overflow: hidden;
-    }
-
-    /* ── Title Bar ── */
-    .t-bar {
-      display: flex;
-      align-items: center;
-      height: 42px;
-      padding: 0 16px;
-      background: var(--header-bg);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-      user-select: none;
-    }
-
-    .t-dots { display: flex; gap: 7px; }
-    .t-dot  { width: 12px; height: 12px; border-radius: 50%; }
-    .t-dot.r { background: #ff5f57; }
-    .t-dot.y { background: #ffbd2e; }
-    .t-dot.g { background: #28c840; }
-
-    .t-title {
-      flex: 1;
-      text-align: center;
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.3px;
-    }
-
-    .t-bar-spacer { width: 46px; }
-
-    /* ── Scroll Body ── */
-    .t-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 22px 26px 8px;
-      font-size: 14px;
-      line-height: 1.75;
-      cursor: text;
-    }
-
-    .t-body::-webkit-scrollbar { width: 4px; }
-    .t-body::-webkit-scrollbar-track { background: transparent; }
-    .t-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-    /* ── Output Blocks ── */
-    .out-block {
-      margin-bottom: 20px;
-      animation: fadeIn 0.15s ease forwards;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .out-cmd-line {
-      display: flex;
-      align-items: baseline;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .out-ps1  { color: var(--accent); font-weight: 700; user-select: none; flex-shrink: 0; }
-    .out-cmd  { color: var(--text); }
-
-    /* ── Content Atoms ── */
-    .sec-title {
-      color: var(--accent);
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    .kv-row { display: flex; margin-bottom: 4px; }
-    .kv-key { color: var(--accent); min-width: 120px; flex-shrink: 0; }
-    .kv-sep { color: var(--text-muted); margin-right: 8px; }
-    .kv-val { color: var(--text); }
-    .kv-val a { color: var(--accent); text-decoration: none; }
-    .kv-val a:hover { text-decoration: underline; }
-
-    .bio {
-      margin-top: 16px;
-      color: var(--text-dim);
-      font-size: 13px;
-      line-height: 1.9;
-      border-left: 2px solid var(--border);
-      padding-left: 14px;
-      max-width: 580px;
-    }
-
-    /* Help */
-    .help-row { display: flex; margin-bottom: 4px; }
-    .help-cmd  { color: var(--accent); min-width: 120px; flex-shrink: 0; }
-    .help-desc { color: var(--text-dim); }
-
-    /* Skills */
-    .skill-group { margin-bottom: 14px; }
-    .skill-group-title {
-      color: var(--text-muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      margin-bottom: 6px;
-    }
-    .skill-entry { color: var(--text); margin-bottom: 3px; }
-    .skill-entry::before { content: '→ '; color: var(--accent); }
-
-    /* Projects */
-    .proj-item { margin-bottom: 14px; }
-    .proj-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 3px; }
-    .proj-name   { color: var(--accent); font-weight: 600; }
-    .diff-easy   { color: var(--green); font-size: 12px; }
-    .diff-medium { color: var(--yellow); font-size: 12px; }
-    .diff-hard   { color: var(--red); font-size: 12px; }
-    .diff-insane { color: var(--pink); font-size: 12px; }
-    .proj-topics { color: var(--text-muted); font-size: 12px; }
-
-    /* Experience */
-    .exp-item { margin-bottom: 16px; border-left: 2px solid var(--border); padding-left: 14px; }
-    .exp-role    { color: var(--accent); font-weight: 600; }
-    .exp-company { color: var(--text); }
-    .exp-period  { color: var(--text-muted); font-size: 12px; margin-bottom: 4px; }
-    .exp-bullet  { color: var(--text-dim); font-size: 13px; }
-    .exp-bullet::before { content: '· '; color: var(--accent); }
-
-    /* Error */
-    .err { color: var(--red); }
-
-    /* Welcome */
-    .welcome-name {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 4px;
-      letter-spacing: 1px;
-    }
-    .welcome-role  { color: var(--text-dim); font-size: 13px; margin-bottom: 14px; }
-    .welcome-hint  { color: var(--text-muted); font-size: 12px; }
-
-    /* ── Input Line ── */
-    .input-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding-bottom: 14px;
-    }
-
-    .in-ps1 {
-      color: var(--accent);
-      font-weight: 700;
-      flex-shrink: 0;
-      user-select: none;
-    }
-
-    #cmd-input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      outline: none;
-      color: var(--text);
-      font-family: inherit;
-      font-size: 14px;
-      caret-color: var(--accent);
-    }
-
-    #cmd-input::placeholder { color: var(--text-muted); }
-
-    /* ── Footer ── */
-    .t-footer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 26px;
-      border-top: 1px solid var(--border);
-      background: var(--header-bg);
-      flex-shrink: 0;
-      flex-wrap: wrap;
-    }
-
-    .try-lbl { color: var(--text-muted); font-size: 12px; }
-
-    .q-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--accent);
-      font-family: inherit;
-      font-size: 12px;
-      padding: 3px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.1s, color 0.1s, border-color 0.1s;
-    }
-
-    .q-btn:hover {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
-    }
-
-    /* ── Mobile ── */
-    @media (max-width: 640px) {
-      body { overflow: auto; align-items: flex-start; }
-      .terminal { width: 100vw; height: 100svh; border-radius: 0; border: none; }
-      .t-body { font-size: 13px; padding: 14px 16px 8px; }
-      .kv-key  { min-width: 90px; }
-      .help-cmd { min-width: 90px; }
-      .welcome-name { font-size: 20px; }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    // Progressive enhancement: animations only kick in when JS runs.
+    (function () {
+      var root = document.documentElement;
+      root.classList.add('js');
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) root.classList.add('reduce-motion');
+      try {
+        if (!reduce && !sessionStorage.getItem('booted')) root.classList.add('booting');
+      } catch (e) {}
+      // Safety net: if app.js never runs, show everything.
+      setTimeout(function () {
+        if (!window.__appReady) root.classList.remove('js', 'booting');
+      }, 3000);
+    })();
+  </script>
+  <script src="assets/js/app.js" defer></script>
 </head>
 <body>
 
-<div class="terminal">
+<a class="skip" href="#main">Pular para o conteúdo</a>
 
-  <!-- Title Bar -->
-  <div class="t-bar">
-    <div class="t-dots">
-      <span class="t-dot r"></span>
-      <span class="t-dot y"></span>
-      <span class="t-dot g"></span>
-    </div>
-    <div class="t-title">~/matensy/portfolio</div>
-    <div class="t-bar-spacer"></div>
-  </div>
+<!-- ── Background effects ── -->
+<canvas id="matrix" aria-hidden="true"></canvas>
+<div class="crt" aria-hidden="true"></div>
 
-  <!-- Scroll Body -->
-  <div class="t-body" id="t-body" onclick="focusInput()">
-    <div id="output"></div>
-    <div class="input-line">
-      <span class="in-ps1">matensy@portfolio:~$</span>
-      <input
-        id="cmd-input"
-        type="text"
-        autocomplete="off"
-        autocorrect="off"
-        autocapitalize="none"
-        spellcheck="false"
-        placeholder="type a command..."
-      >
-    </div>
-  </div>
-
-  <!-- Footer Buttons -->
-  <div class="t-footer">
-    <span class="try-lbl">Try:</span>
-    <button class="q-btn" onclick="runCommand('help')">help</button>
-    <button class="q-btn" onclick="runCommand('about')">about</button>
-    <button class="q-btn" onclick="runCommand('skills')">skills</button>
-    <button class="q-btn" onclick="runCommand('projects')">projects</button>
-    <button class="q-btn" onclick="runCommand('contact')">contact</button>
-  </div>
-
+<!-- ── Boot sequence (first visit per session) ── -->
+<div id="boot" class="boot" aria-hidden="true">
+  <pre id="boot-log" class="boot-log"></pre>
+  <span class="boot-skip">[ clique ou pressione qualquer tecla para pular ]</span>
 </div>
 
-<script>
-(function () {
-  'use strict';
+<!-- ── Status bar (tmux style) ── -->
+<header class="statusbar">
+  <a class="sb-session" href="#home">[matensy]</a>
+  <nav class="sb-nav" aria-label="Seções">
+    <a href="#home" data-nav="home"><span>0:</span>home</a>
+    <a href="#whoami" data-nav="whoami"><span>1:</span>whoami</a>
+    <a href="#skills" data-nav="skills"><span>2:</span>skills</a>
+    <a href="#malware" data-nav="malware"><span>3:</span>malware</a>
+    <a href="#experience" data-nav="experience"><span>4:</span>exp</a>
+    <a href="#contact" data-nav="contact"><span>5:</span>contact</a>
+  </nav>
+  <div class="sb-right">
+    <button type="button" class="sb-shell" data-open-shell aria-haspopup="dialog">&gt;_ shell</button>
+    <span class="sb-clock" id="clock" aria-hidden="true">--:--:--</span>
+  </div>
+</header>
 
-  const output = document.getElementById('output');
-  const input  = document.getElementById('cmd-input');
-  const body   = document.getElementById('t-body');
+<main id="main">
 
-  let cmdHistory = [];
-  let histIdx    = -1;
+  <!-- ══════════════ HERO ══════════════ -->
+  <section id="home" class="hero">
+    <div class="hero-grid">
+      <div class="win hero-win">
+        <div class="win-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="win-title">matensy@kali: ~</span>
+        </div>
+        <div class="win-body">
+          <div class="ps1" aria-hidden="true">
+            <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~</span><span class="ps1-frame">]</span></div>
+            <div><span class="ps1-frame">└─$</span> <span class="cmd-text">figlet -f ansi_shadow matensy</span></div>
+          </div>
 
-  // ── Helpers ──────────────────────────────────────────────
+          <h1 class="ascii-wrap">
+            <span class="sr-only">Matensy</span>
+<pre class="ascii glitch" aria-hidden="true">███╗   ███╗ █████╗ ████████╗███████╗███╗   ██╗███████╗██╗   ██╗
+████╗ ████║██╔══██╗╚══██╔══╝██╔════╝████╗  ██║██╔════╝╚██╗ ██╔╝
+██╔████╔██║███████║   ██║   █████╗  ██╔██╗ ██║███████╗ ╚████╔╝
+██║╚██╔╝██║██╔══██║   ██║   ██╔══╝  ██║╚██╗██║╚════██║  ╚██╔╝
+██║ ╚═╝ ██║██║  ██║   ██║   ███████╗██║ ╚████║███████║   ██║
+╚═╝     ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝  ╚═══╝╚══════╝   ╚═╝   </pre>
+          </h1>
 
-  function esc(s) {
-    return String(s)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-  }
+          <p class="hero-role">
+            <span class="hl">&gt;</span>
+            <span id="typer" class="typer">Offensive Security · Malware Analysis</span><span class="caret" aria-hidden="true"></span>
+          </p>
 
-  function scrollDown() {
-    body.scrollTop = body.scrollHeight;
-  }
+          <p class="hero-bio">
+            Matheus Henrique — estudante de Ciência da Computação apaixonado por segurança ofensiva.
+            Exploro Active Directory, aplicações web e binários maliciosos, sempre com uma
+            abordagem prática: quebrar, entender e documentar.
+          </p>
 
-  function block(cmd, html) {
-    const el = document.createElement('div');
-    el.className = 'out-block';
-    el.innerHTML =
-      `<div class="out-cmd-line">` +
-        `<span class="out-ps1">matensy@portfolio:~$</span>` +
-        `<span class="out-cmd">${esc(cmd)}</span>` +
-      `</div>` +
-      `<div>${html}</div>`;
-    output.appendChild(el);
-    scrollDown();
-  }
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#malware">./reports <span aria-hidden="true">→</span></a>
+            <a class="btn" href="#contact">./contact.sh</a>
+            <button type="button" class="btn btn-ghost" data-open-shell>abrir shell <kbd>`</kbd></button>
+          </div>
+        </div>
+      </div>
 
-  function kv(key, val) {
-    return (
-      `<div class="kv-row">` +
-        `<span class="kv-key">${key}</span>` +
-        `<span class="kv-sep">→</span>` +
-        `<span class="kv-val">${val}</span>` +
-      `</div>`
-    );
-  }
+      <aside class="win htb-card" aria-label="Hack The Box">
+        <div class="win-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="win-title">hackthebox — tun0</span>
+        </div>
+        <div class="win-body">
+          <div class="htb-head">
+            <svg class="htb-logo" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5 21 6.75v10.5L12 22.5 3 17.25V6.75L12 1.5Zm0 2.31L5 7.9v8.2l7 4.09 7-4.09V7.9l-7-4.09Zm0 3.14 4.4 2.57v5.04L12 17.13l-4.4-2.57V9.52L12 6.95Z"/></svg>
+            <span>Hack The Box</span>
+            <span class="htb-live"><i></i> active</span>
+          </div>
+          <div class="htb-rank">
+            <span class="htb-rank-label">ranking brasil</span>
+            <span class="htb-rank-num" data-rank="17">#17</span>
+            <span class="htb-rank-top">TOP 17 BR</span>
+          </div>
+          <dl class="kv">
+            <div><dt>player</dt><dd class="c-green">auramentality</dd></div>
+            <div><dt>focus</dt><dd>AD · Web · PrivEsc</dd></div>
+            <div><dt>vpn</dt><dd class="c-cyan">10.10.14.x</dd></div>
+          </dl>
+          <a class="htb-link" href="https://app.hackthebox.com/users/1645631" target="_blank" rel="noopener">ver perfil no HTB <span aria-hidden="true">↗</span></a>
+        </div>
+      </aside>
+    </div>
 
-  function helpRow(cmd, desc) {
-    return `<div class="help-row"><span class="help-cmd">${cmd}</span><span class="help-desc">${desc}</span></div>`;
-  }
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker-track">
+        <span>Kerberos</span><span>LDAP</span><span>SMB</span><span>ADCS / Certipy</span><span>Shadow Credentials</span><span>DCSync</span><span>DPAPI</span><span>SQL Injection</span><span>PE Analysis</span><span>.NET Reactor</span><span>Process Injection</span><span>NT Syscalls</span><span>AES · 3DES</span><span>IOC Extraction</span><span>Python</span><span>AWS</span>
+        <span>Kerberos</span><span>LDAP</span><span>SMB</span><span>ADCS / Certipy</span><span>Shadow Credentials</span><span>DCSync</span><span>DPAPI</span><span>SQL Injection</span><span>PE Analysis</span><span>.NET Reactor</span><span>Process Injection</span><span>NT Syscalls</span><span>AES · 3DES</span><span>IOC Extraction</span><span>Python</span><span>AWS</span>
+      </div>
+    </div>
+  </section>
 
-  function skillEntry(name) {
-    return `<div class="skill-entry">${name}</div>`;
-  }
+  <!-- ══════════════ WHOAMI ══════════════ -->
+  <section id="whoami" class="sec">
+    <div class="ps1 sec-cmd" data-type>
+      <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~</span><span class="ps1-frame">]</span></div>
+      <div><span class="ps1-frame">└─$</span> <span class="cmd-text">neofetch --about</span></div>
+    </div>
+    <h2 class="sec-title"><span class="hash">#</span> <span data-scramble>whoami</span></h2>
 
-  function proj(name, diff, topics) {
-    const cls = 'diff-' + diff;
-    const lbl = diff.charAt(0).toUpperCase() + diff.slice(1);
-    return (
-      `<div class="proj-item">` +
-        `<div class="proj-header">` +
-          `<span class="proj-name">${name}</span>` +
-          `<span class="${cls}">[${lbl}]</span>` +
-        `</div>` +
-        `<div class="proj-topics">${topics}</div>` +
-      `</div>`
-    );
-  }
+    <div class="win reveal">
+      <div class="win-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="win-title">neofetch</span>
+      </div>
+      <div class="win-body neofetch">
+<pre class="neo-art" aria-hidden="true">      ______
+   .-"      "-.
+  /            \
+ |              |
+ |,  .-.  .-.  ,|
+ | )(__/  \__)( |
+ |/     /\     \|
+ (_     ^^     _)
+  \__|IIIIII|__/
+   | \IIIIII/ |
+   \          /
+    `--------`</pre>
+        <div class="neo-info">
+          <div class="neo-host"><span class="c-green">matensy</span>@<span class="c-accent">kali</span></div>
+          <div class="neo-sep" aria-hidden="true">─────────────────────</div>
+          <dl class="kv kv-neo">
+            <div><dt>Nome</dt><dd>Matheus Henrique de Jesus</dd></div>
+            <div><dt>Handle</dt><dd>Matensy</dd></div>
+            <div><dt>Idade</dt><dd>21</dd></div>
+            <div><dt>Local</dt><dd>Ribeirão Preto, SP — BR</dd></div>
+            <div><dt>Formação</dt><dd>B.Sc. Ciência da Computação — UNIP (2023–2026)</dd></div>
+            <div><dt>HTB</dt><dd><span class="c-green">auramentality</span> · Top 17 BR</dd></div>
+            <div><dt>Foco</dt><dd>Red Team · Malware Analysis · Active Directory</dd></div>
+            <div><dt>Shell</dt><dd>zsh + python3 + powershell</dd></div>
+          </dl>
+          <div class="neo-colors" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
 
-  function docLink(name, href, meta) {
-    return (
-      `<div class="proj-item">` +
-        `<div class="proj-header">` +
-          `<a class="proj-name" href="${href}" target="_blank" rel="noopener">${name}</a>` +
-          `<span class="diff-easy">[PDF]</span>` +
-        `</div>` +
-        `<div class="proj-topics">${meta}</div>` +
-      `</div>`
-    );
-  }
+    <div class="win reveal">
+      <div class="win-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="win-title">cat about.md</span>
+      </div>
+      <div class="win-body prose">
+        <p>
+          Apaixonado por <strong>segurança ofensiva</strong> e desafios CTF. Dedico meu tempo a estudar
+          vulnerabilidades, explorar sistemas e subir no ranking do <strong>Hack The Box</strong>, onde hoje
+          estou no <span class="c-green">Top 17 do Brasil</span>.
+        </p>
+        <p>
+          Além do lado ofensivo, faço <strong>engenharia reversa e análise estática de malware</strong> —
+          desofuscando loaders .NET, mapeando cadeias de injeção de processo e extraindo chaves e IOCs
+          sem executar o binário.
+        </p>
+        <p class="muted">
+          Experiência com pentest, análise de vulnerabilidades, cloud AWS e automação com Python.
+        </p>
+      </div>
+    </div>
+  </section>
 
-  function expItem(role, company, period, bullets) {
-    return (
-      `<div class="exp-item">` +
-        `<div class="exp-role">${role}</div>` +
-        `<div class="exp-company">${company}</div>` +
-        `<div class="exp-period">${period}</div>` +
-        bullets.map(b => `<div class="exp-bullet">${b}</div>`).join('') +
-      `</div>`
-    );
-  }
+  <!-- ══════════════ SKILLS ══════════════ -->
+  <section id="skills" class="sec">
+    <div class="ps1 sec-cmd" data-type>
+      <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~</span><span class="ps1-frame">]</span></div>
+      <div><span class="ps1-frame">└─$</span> <span class="cmd-text">tree ~/skills</span></div>
+    </div>
+    <h2 class="sec-title"><span class="hash">#</span> <span data-scramble>skills &amp; stack</span></h2>
 
-  // ── Commands ─────────────────────────────────────────────
+    <div class="grid-3">
+      <div class="win reveal">
+        <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">offensive/</span></div>
+        <div class="win-body">
+          <ul class="tree">
+            <li>Active Directory
+              <ul>
+                <li>Kerberos · LDAP · SMB</li>
+                <li>ADCS (Certipy) · Shadow Credentials</li>
+                <li>DCSync · DPAPI</li>
+              </ul>
+            </li>
+            <li>Web Hacking &amp; SQL Injection</li>
+            <li>Vulnerability Research</li>
+            <li>CTFs &amp; Hack The Box</li>
+            <li>Social Engineering</li>
+          </ul>
+        </div>
+      </div>
 
-  function cmdHelp() {
-    block('help',
-      `<div class="sec-title">Available Commands</div>` +
-      helpRow('about',      'Who I am and what I do.') +
-      helpRow('skills',     'Technical skills &amp; certifications.') +
-      helpRow('projects',   'HTB machines I&apos;ve pwned.') +
-      helpRow('experience', 'Professional experience.') +
-      helpRow('contact',    'How to reach me.') +
-      helpRow('clear',      'Clear the terminal.') +
-      helpRow('help',       'Show this message.')
-    );
-  }
+      <div class="win reveal">
+        <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">reversing/</span></div>
+        <div class="win-body">
+          <ul class="tree">
+            <li>Análise estática de PE
+              <ul>
+                <li>Seções, entropia, imports</li>
+                <li>pefile · strings · extração de IOCs</li>
+              </ul>
+            </li>
+            <li>Desofuscação .NET (de4dotEx)</li>
+            <li>Recuperação de rotinas cripto
+              <ul>
+                <li>3DES · AES-256 · XOR PRNG</li>
+              </ul>
+            </li>
+            <li>Process injection &amp; anti-analysis</li>
+          </ul>
+        </div>
+      </div>
 
-  function cmdAbout() {
-    block('about',
-      `<div class="sec-title">About</div>` +
-      kv('Name',     'Matheus Henrique de Jesus') +
-      kv('Handle',   'Matensy') +
-      kv('Role',     'Cybersecurity Student &amp; HTB Player') +
-      kv('Location', 'Ribeirão Preto, BR') +
-      kv('Age',      '21') +
-      kv('HTB Nick', 'Nugur1') +
-      kv('HTB Rank', 'Top 39 BR') +
-      kv('Discord',  '@Matensy') +
-      kv('Degree',   'B.Sc. Computer Science — UNIP (2023–2026)') +
-      `<div class="bio">` +
-        `Apaixonado por segurança ofensiva e desafios CTF. Dedico meu tempo a estudar ` +
-        `vulnerabilidades, explorar sistemas e subir no ranking do Hack The Box. ` +
-        `Tenho um olhar crítico para resolver problemas e uma abordagem prática para aprender.<br><br>` +
-        `Experiência em pentesting, análise de vulnerabilidades, cloud AWS e automação com Python.` +
-      `</div>`
-    );
-  }
+      <div class="win reveal">
+        <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">infra/</span></div>
+        <div class="win-body">
+          <ul class="tree">
+            <li>Linux &amp; Networking</li>
+            <li>Windows Server &amp; Redes</li>
+            <li>AWS &amp; Cloud Services</li>
+            <li>Scripting
+              <ul>
+                <li>Python (dados &amp; automação)</li>
+                <li>PowerShell · Bash</li>
+              </ul>
+            </li>
+            <li>Compliance &amp; Governança de TI</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
-  function cmdSkills() {
-    block('skills',
-      `<div class="sec-title">Skills</div>` +
+    <div class="win reveal certs">
+      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">cat certifications.txt</span></div>
+      <div class="win-body">
+        <ul class="checklist">
+          <li><span class="ok">[✓]</span> Google Cybersecurity</li>
+          <li><span class="ok">[✓]</span> The Complete Ethical Hacking Course: Beginner to Advanced</li>
+          <li><span class="ok">[✓]</span> Formação PowerShell: automatize suas tarefas</li>
+          <li><span class="ok">[✓]</span> Formação Shell Scripting: automatize tarefas</li>
+          <li><span class="ok">[✓]</span> Administração de Redes Windows</li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-      `<div class="skill-group">` +
-        `<div class="skill-group-title">Offensive Security</div>` +
-        skillEntry('CTFs &amp; Hack The Box') +
-        skillEntry('Vulnerability Research') +
-        skillEntry('SQL Injection &amp; Web Hacking') +
-        skillEntry('Reverse Engineering') +
-        skillEntry('Social Engineering') +
-      `</div>` +
+  <!-- ══════════════ MALWARE ══════════════ -->
+  <section id="malware" class="sec">
+    <div class="ps1 sec-cmd" data-type>
+      <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~/reports</span><span class="ps1-frame">]</span></div>
+      <div><span class="ps1-frame">└─$</span> <span class="cmd-text">ls -la malware/</span></div>
+    </div>
+    <h2 class="sec-title"><span class="hash">#</span> <span data-scramble>malware analysis</span></h2>
+    <p class="sec-lead">
+      Relatórios completos de análise <strong>100% estática</strong> — o binário nunca foi executado.
+      Cada relatório traz hashes, cadeia de execução, criptografia recuperada e IOCs.
+    </p>
 
-      `<div class="skill-group">` +
-        `<div class="skill-group-title">Infrastructure</div>` +
-        skillEntry('Linux &amp; Networking') +
-        skillEntry('AWS &amp; Cloud Services') +
-        skillEntry('PowerShell &amp; Shell Scripting') +
-        skillEntry('Python &amp; Data Processing') +
-      `</div>` +
+    <!-- Live analyzer animation -->
+    <div class="win reveal analyzer" aria-hidden="true">
+      <div class="win-bar">
+        <span class="dots"><i></i><i></i><i></i></span>
+        <span class="win-title">xxd Kjnry.exe | ./analyze.py</span>
+      </div>
+      <div class="win-body analyzer-body">
+        <div class="hexdump" id="hexdump"></div>
+        <div class="analysis-log" id="analysis-log"></div>
+      </div>
+    </div>
 
-      `<div class="skill-group">` +
-        `<div class="skill-group-title">Certifications</div>` +
-        skillEntry('Google Cybersecurity') +
-        skillEntry('The Complete Ethical Hacking Course: Beginner to Advanced') +
-        skillEntry('Formação PowerShell: automatize suas tarefas') +
-        skillEntry('Formação Shell Scripting: automatize tarefas') +
-        skillEntry('Administração de Redes Windows') +
-      `</div>`
-    );
-  }
+    <div class="grid-2">
+      <article class="win reveal report">
+        <div class="win-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="win-title">-rw-r--r-- kjnry-malware-analysis.pdf</span>
+        </div>
+        <div class="win-body">
+          <div class="report-tags">
+            <span class="sev sev-critical">CRITICAL</span>
+            <span class="pill">CVSS 9.6</span>
+            <span class="pill">PE32 · .NET 4.0</span>
+            <span class="pill">785 KB</span>
+          </div>
+          <h3 class="report-title">Kjnry.exe <span class="muted">—</span> .NET Reactor v4 Information Stealer</h3>
+          <p class="hash-line"><span class="muted">sha256</span> <code title="d313447f8bc9b4e058ca7b3de4cb73f03be0713a730b73cc03a9faecbeb288bc">d313447f8bc9b4e0…beb288bc</code></p>
+          <ul class="findings">
+            <li>3 camadas de criptografia revertidas: <code>TripleDES-CBC → GZip → AES-256-CBC</code></li>
+            <li>Desofuscação com de4dotEx: <strong>2.515 linhas</strong> de C# limpo recuperadas</li>
+            <li>APIs de injeção (<code>VirtualAlloc</code>, <code>WriteProcessMemory</code>) resolvidas via string-splitting</li>
+            <li>Arquitetura modular com 81+ classes: browsers, wallets, FTP, VPN, Discord e Telegram</li>
+          </ul>
+          <a class="btn btn-primary btn-sm" href="assets/docs/kjnry-malware-analysis.pdf" target="_blank" rel="noopener">abrir relatório [PDF] <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
 
-  function cmdProjects() {
-    block('projects',
-      `<div class="sec-title">HTB Machines Pwned</div>` +
-      proj('HTB Puppy',       'medium', 'Kerberos · LDAP · SMB · DCSync · DPAPI') +
-      proj('HTB Fluffy',      'easy',   'SMB · Responder · Certipy · PKI · ShadowCredentials') +
-      proj('HTB Editor',      'easy',   'XWiki · CVE-2025-24893 · Netdata') +
-      proj('HTB WhiteRabbit', 'insane', 'SQL Injection · MD5 · PredictableRNG · Sudo') +
+      <article class="win reveal report">
+        <div class="win-bar">
+          <span class="dots"><i></i><i></i><i></i></span>
+          <span class="win-title">-rw-r--r-- abc-malware-analysis.pdf</span>
+        </div>
+        <div class="win-body">
+          <div class="report-tags">
+            <span class="sev sev-critical">CRITICAL</span>
+            <span class="pill">CVSS 9.6</span>
+            <span class="pill">PE32+ · Rust</span>
+            <span class="pill">22.4 MB</span>
+          </div>
+          <h3 class="report-title">javaw.exe <span class="muted">—</span> Rust InfoStealer com Process Injection</h3>
+          <p class="hash-line"><span class="muted">sha256</span> <code title="6df297c6ee6c5278dbee4c1c553e71dfd4acae9b559012c22b8e836e21dfdfa3">6df297c6ee6c5278…21dfdfa3</code></p>
+          <ul class="findings">
+            <li>Injeção via <strong>NT syscalls diretas</strong> (<code>NtAllocateVirtualMemory → NtCreateThreadEx</code>), evadindo hooks de EDR</li>
+            <li>Anti-sandbox / anti-VM / anti-debug: VMware, VirtualBox, Hyper-V, Cuckoo, Sandboxie</li>
+            <li>Cripto híbrida: AES-GCM, ChaCha20, Curve25519 e marcador ML-KEM (pós-quântico)</li>
+            <li>Roubo de credenciais e cookies de Chrome, Firefox e Edge</li>
+          </ul>
+          <a class="btn btn-primary btn-sm" href="assets/docs/abc-malware-analysis.pdf" target="_blank" rel="noopener">abrir relatório [PDF] <span aria-hidden="true">↗</span></a>
+        </div>
+      </article>
+    </div>
+  </section>
 
-      `<div class="sec-title" style="margin-top:24px">Malware Analysis Reports</div>` +
-      docLink('Kjnry.exe Analysis', 'assets/docs/kjnry-malware-analysis.pdf', '.NET Reactor v4 Protected Information Stealer') +
-      docLink('ABC Malware Analysis',   'assets/docs/abc-malware-analysis.pdf',   'Static &amp; behavioral analysis report') +
+  <!-- ══════════════ EXPERIENCE ══════════════ -->
+  <section id="experience" class="sec">
+    <div class="ps1 sec-cmd" data-type>
+      <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~/career</span><span class="ps1-frame">]</span></div>
+      <div><span class="ps1-frame">└─$</span> <span class="cmd-text">git log --graph --oneline</span></div>
+    </div>
+    <h2 class="sec-title"><span class="hash">#</span> <span data-scramble>experience</span></h2>
 
-      `<div class="sec-title" style="margin-top:24px">More</div>` +
-      kv('CTF Writeups', '<a href="https://app.notion.com/p/2675985292f080c2992be4f9450ac607?v=2675985292f081cdb3f9000c4bff0b2b" target="_blank" rel="noopener">Notion — CTFs</a>') +
-      kv('GitHub',       '<a href="https://github.com/Matensy/" target="_blank" rel="noopener">github.com/Matensy</a>')
-    );
-  }
+    <ol class="gitlog">
+      <li class="commit reveal">
+        <div class="commit-head"><span class="c-yellow">commit 7f3a9c1</span> <span class="c-cyan">(HEAD -&gt; security)</span></div>
+        <h3 class="commit-role">Estágio de Cibersegurança</h3>
+        <div class="commit-meta">Adekz Tecnologia — Ribeirão Preto, SP <span class="muted">·</span> <time>Set 2025 – Mar 2026</time></div>
+        <ul>
+          <li>Análise de vulnerabilidades e testes de penetração (Pentest)</li>
+          <li>Implementação de práticas de segurança e monitoramento de infraestrutura</li>
+          <li>Compliance e governança de TI junto às equipes de desenvolvimento</li>
+        </ul>
+      </li>
+      <li class="commit reveal">
+        <div class="commit-head"><span class="c-yellow">commit 3b8e21d</span></div>
+        <h3 class="commit-role">Estagiário de TI</h3>
+        <div class="commit-meta">Compass UOL — Ribeirão Preto, SP <span class="muted">·</span> <time>Fev 2025 – Abr 2025</time></div>
+        <ul>
+          <li>Desenvolvimento de soluções com Python para processamento de dados</li>
+          <li>Big Data e análise de grandes volumes de informação</li>
+          <li>AWS (Amazon Web Services) e pipelines de automação</li>
+        </ul>
+      </li>
+      <li class="commit reveal">
+        <div class="commit-head"><span class="c-yellow">commit a19c4f0</span></div>
+        <h3 class="commit-role">Analista de SAC — Help Desk Salesforce</h3>
+        <div class="commit-meta">Leroy Merlin — Ribeirão Preto, SP <span class="muted">·</span> <time>Dez 2023 – Jun 2024</time></div>
+        <ul>
+          <li>Suporte técnico ao cliente via plataforma Salesforce</li>
+          <li>Gestão de estornos e resolução de problemas pós-venda</li>
+        </ul>
+      </li>
+      <li class="commit reveal">
+        <div class="commit-head"><span class="c-yellow">commit 0e5d7b2</span> <span class="muted">(root commit)</span></div>
+        <h3 class="commit-role">Assistente de Gestão — TI</h3>
+        <div class="commit-meta">Leroy Merlin — Ribeirão Preto, SP <span class="muted">·</span> <time>Ago 2023 – Nov 2023</time></div>
+        <ul>
+          <li>Suporte em infraestrutura e sistemas internos</li>
+          <li>Manutenção de equipamentos e resolução de problemas técnicos</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
 
-  function cmdExperience() {
-    block('experience',
-      `<div class="sec-title">Professional Experience</div>` +
+  <!-- ══════════════ CONTACT ══════════════ -->
+  <section id="contact" class="sec">
+    <div class="ps1 sec-cmd" data-type>
+      <div><span class="ps1-frame">┌──(</span><span class="ps1-user">matensy㉿kali</span><span class="ps1-frame">)-[</span><span class="ps1-path">~</span><span class="ps1-frame">]</span></div>
+      <div><span class="ps1-frame">└─$</span> <span class="cmd-text">./contact.sh --all</span></div>
+    </div>
+    <h2 class="sec-title"><span class="hash">#</span> <span data-scramble>contact</span></h2>
 
-      expItem(
-        'Estágio de Cibersegurança',
-        'Adekz Tecnologia — Ribeirão Preto, SP',
-        'Set 2025 – Mar 2026',
-        [
-          'Análise de vulnerabilidades e testes de penetração (Pentest)',
-          'Implementação de práticas de segurança e monitoramento de infraestrutura',
-          'Compliance e governança de TI junto às equipes de desenvolvimento',
-        ]
-      ) +
+    <div class="win reveal">
+      <div class="win-bar"><span class="dots"><i></i><i></i><i></i></span><span class="win-title">./contact.sh</span></div>
+      <div class="win-body">
+        <p class="contact-intro"><span class="c-green">[+]</span> Aberto a oportunidades em segurança ofensiva, pentest e análise de malware.</p>
+        <ul class="contact-list">
+          <li>
+            <span class="c-key">email</span>
+            <a href="mailto:matheuscolobino@hotmail.com">matheuscolobino@hotmail.com</a>
+            <button type="button" class="copy" data-copy="matheuscolobino@hotmail.com">copiar</button>
+          </li>
+          <li>
+            <span class="c-key">linkedin</span>
+            <a href="https://www.linkedin.com/in/matheus-henrique-de-jesus-1538b0248/" target="_blank" rel="noopener">in/matheus-henrique-de-jesus</a>
+          </li>
+          <li>
+            <span class="c-key">github</span>
+            <a href="https://github.com/Matensy" target="_blank" rel="noopener">github.com/Matensy</a>
+          </li>
+          <li>
+            <span class="c-key">hackthebox</span>
+            <a href="https://app.hackthebox.com/users/1645631" target="_blank" rel="noopener">auramentality <span class="muted">· Top 17 BR</span></a>
+          </li>
+          <li>
+            <span class="c-key">discord</span>
+            <span>matensy</span>
+            <button type="button" class="copy" data-copy="matensy">copiar</button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
 
-      expItem(
-        'Estagiário de TI',
-        'Compass UOL — Ribeirão Preto, SP',
-        'Fev 2025 – Abr 2025',
-        [
-          'Desenvolvimento de soluções com Python para processamento de dados',
-          'Big Data e análise de grandes volumes de informação',
-          'AWS (Amazon Web Services) e pipelines de automação',
-        ]
-      ) +
+</main>
 
-      expItem(
-        'Analista de SAC — Help Desk Salesforce',
-        'Leroy Merlin — Ribeirão Preto, SP',
-        'Dez 2023 – Jun 2024',
-        [
-          'Suporte técnico ao cliente via plataforma Salesforce',
-          'Gestão de estornos e resolução de problemas pós-venda',
-        ]
-      ) +
+<footer class="footer">
+  <span class="muted">[ EOF ]</span>
+  <span>© 2026 Matensy</span>
+  <span class="muted">dica: pressione <kbd>`</kbd> para abrir o shell</span>
+</footer>
 
-      expItem(
-        'Assistente de Gestão — TI',
-        'Leroy Merlin — Ribeirão Preto, SP',
-        'Ago 2023 – Nov 2023',
-        [
-          'Suporte em infraestrutura e sistemas internos',
-          'Manutenção de equipamentos e resolução de problemas técnicos',
-        ]
-      )
-    );
-  }
+<!-- ── Interactive shell (quake-style drop-down) ── -->
+<div id="shell" class="shell" role="dialog" aria-modal="true" aria-label="Shell interativo" hidden>
+  <div class="shell-bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span class="win-title">matensy@kali: ~ (interactive)</span>
+    <button type="button" class="shell-close" data-close-shell aria-label="Fechar shell">✕</button>
+  </div>
+  <div class="shell-body" id="shell-body">
+    <div id="shell-out"></div>
+    <label class="shell-input">
+      <span class="ps1-inline"><span class="ps1-user">matensy㉿kali</span>:<span class="ps1-path">~</span>$</span>
+      <input id="shell-in" type="text" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" aria-label="Comando">
+    </label>
+  </div>
+</div>
 
-  function cmdContact() {
-    block('contact',
-      `<div class="sec-title">Contact</div>` +
-      kv('Email',    '<a href="mailto:matheuscolobino@hotmail.com">matheuscolobino@hotmail.com</a>') +
-      kv('LinkedIn', '<a href="https://www.linkedin.com/in/matheus-henrique-de-jesus-1538b0248/" target="_blank" rel="noopener">linkedin.com/in/matheus-henrique...</a>') +
-      kv('Discord',  'matensy') +
-      kv('HTB',      '<a href="https://app.hackthebox.com/users/1645631" target="_blank" rel="noopener">Nugur1 — Top 39 BR</a>')
-    );
-  }
-
-  function cmdClear() {
-    output.innerHTML = '';
-  }
-
-  function cmdWhoami() {
-    block('whoami',
-      `<span>matensy — Cybersecurity Student &amp; HTB Player @ Ribeirão Preto, BR</span>`
-    );
-  }
-
-  function cmdLs() {
-    block('ls',
-      `<span class="kv-key">about</span>&nbsp;&nbsp;` +
-      `<span class="kv-key">skills</span>&nbsp;&nbsp;` +
-      `<span class="kv-key">projects</span>&nbsp;&nbsp;` +
-      `<span class="kv-key">experience</span>&nbsp;&nbsp;` +
-      `<span class="kv-key">contact</span>`
-    );
-  }
-
-  function cmdExit() {
-    block('exit',
-      `<span class="text-dim">There's no escaping this terminal. 👾</span>`
-    );
-  }
-
-  // ── Dispatch ─────────────────────────────────────────────
-
-  const CMDS = {
-    help:       cmdHelp,
-    about:      cmdAbout,
-    skills:     cmdSkills,
-    projects:   cmdProjects,
-    experience: cmdExperience,
-    contact:    cmdContact,
-    clear:      cmdClear,
-    whoami:     cmdWhoami,
-    ls:         cmdLs,
-    exit:       cmdExit,
-  };
-
-  function runCommand(cmd) {
-    cmd = (cmd || '').trim().toLowerCase();
-    input.value = '';
-    histIdx = -1;
-
-    if (!cmd) return;
-
-    if (cmd !== 'clear') cmdHistory.unshift(cmd);
-
-    if (CMDS[cmd]) {
-      CMDS[cmd]();
-    } else {
-      block(cmd,
-        `<span class="err">bash: ${esc(cmd)}: command not found — type <span style="color:var(--accent)">help</span> for available commands.</span>`
-      );
-    }
-
-    focusInput();
-  }
-
-  window.runCommand = runCommand;
-
-  function focusInput() {
-    input.focus();
-    scrollDown();
-  }
-
-  window.focusInput = focusInput;
-
-  // ── Keyboard ─────────────────────────────────────────────
-
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
-      runCommand(input.value);
-
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      if (histIdx < cmdHistory.length - 1) {
-        histIdx++;
-        input.value = cmdHistory[histIdx];
-      }
-
-    } else if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      if (histIdx > 0) {
-        histIdx--;
-        input.value = cmdHistory[histIdx];
-      } else {
-        histIdx = -1;
-        input.value = '';
-      }
-
-    } else if (e.key === 'Tab') {
-      e.preventDefault();
-      const partial = input.value.trim().toLowerCase();
-      if (partial) {
-        const matches = Object.keys(CMDS).filter(c => c.startsWith(partial));
-        if (matches.length === 1) input.value = matches[0];
-      }
-
-    } else if (e.key === 'l' && e.ctrlKey) {
-      e.preventDefault();
-      cmdClear();
-    }
-  });
-
-  // ── Init ─────────────────────────────────────────────────
-
-  (function showWelcome() {
-    const el = document.createElement('div');
-    el.className = 'out-block';
-    el.innerHTML =
-      `<div style="margin-bottom:20px">` +
-        `<div class="welcome-name">Matensy</div>` +
-        `<div class="welcome-role">Cybersecurity Student · HTB Player · Ribeirão Preto, BR</div>` +
-        `<div class="welcome-hint">Type a command or click the shortcuts below.</div>` +
-      `</div>`;
-    output.appendChild(el);
-  })();
-
-  setTimeout(() => runCommand('help'), 250);
-  setTimeout(focusInput, 300);
-
-})();
-</script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 </body>
 </html>
